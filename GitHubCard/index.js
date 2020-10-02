@@ -4,6 +4,27 @@
     https://api.github.com/users/<your name>
 */
 
+// in HTTPie, put in: http get "URL"
+
+import axios from "axios";
+
+axios
+  .get("https://api.github.com/users/PedroVanT")
+  .then((res) => {
+    console.log(res.data);
+    cardz.append(cardCreater(res.data));
+    followersArray.forEach((item) => {
+      axios.get(`https://api.github.com/users/${item}`).then((res) => {
+        cardz.append(cardCreater(res.data));
+      });
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+    debugger;
+  });
+const cardz = document.querySelector(".cards");
+
 /*
   STEP 2: Inspect and study the data coming back, this is YOUR
     github info! You will need to understand the structure of this
@@ -28,7 +49,13 @@
     user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = [
+  "andre-jeon",
+  "TGIFernando",
+  "matty-serwer",
+  "MileyWright",
+  "bigknell",
+];
 
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
@@ -58,3 +85,39 @@ const followersArray = [];
     luishrd
     bigknell
 */
+
+function cardCreater(obj) {
+  const card = document.createElement("div");
+  const newImg = document.createElement("img");
+  const cardInfo = document.createElement("div");
+  const name = document.createElement("h3");
+  const username = document.createElement("p");
+  const location = document.createElement("p");
+  const profile = document.createElement("p");
+  const address = document.createElement("a");
+  const followers = document.createElement("p");
+  const following = document.createElement("p");
+  const bio = document.createElement("p");
+
+  card.classList.add("card");
+  cardInfo.classList.add("card-info");
+  name.classList.add("name");
+  username.classList.add("username");
+
+  newImg.src = obj.avatar_url;
+  name.textContent = obj.name;
+  username.textContent = obj.login;
+  location.textContent = `Location: ${obj.location}`;
+  profile.textContent = "Profile: ";
+  address.href = obj.html_url;
+  address.textContent = obj.html_url;
+  followers.textContent = `Followers: ${obj.followers}`;
+  following.textContent = `Following: ${obj.following};`
+  bio.textContent = `Bio: ${obj.bio}`;
+
+  card.append(newImg, cardInfo);
+  cardInfo.append(name, username, location, profile, followers, following, bio);
+  profile.append(address);
+
+  return card;
+}
